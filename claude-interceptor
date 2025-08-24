@@ -90,7 +90,7 @@ install_interceptors() {
     mkdir -p "$INTERCEPTOR_DIR"
     
     # Download interceptors
-    local scripts=("python" "python3" "pip" "pip3" "mypy" "pyright" "pylint" "black" "flake8" "isort")
+    local scripts=("python" "python3" "pip" "pip3" "virtualenv" "mypy" "pyright" "pylint" "black" "flake8" "isort")
     
     for script in "${scripts[@]}"; do
         if command -v curl >/dev/null 2>&1; then

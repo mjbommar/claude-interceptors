@@ -1,0 +1,30 @@
+#!/bin/bash
+# Claude Interceptor for 'virtualenv' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    # Find the real virtualenv executable
+    REAL_VIRTUALENV=$(command -v virtualenv | grep -v "$(dirname "$0")" | head -n1)
+    if [[ -n "$REAL_VIRTUALENV" ]]; then
+        exec "$REAL_VIRTUALENV" "$@"
+    else
+        echo "❌ virtualenv not found in system PATH"
+        exit 1
+    fi
+fi
+
+echo "❌ virtualenv detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  Choose a modern virtual environment tool:"
+echo "  📦 uv venv $*                           # Ultra-fast virtual environments"
+echo "  📦 python -m venv $*                    # Built-in Python venv (Python 3.3+)"
+echo ""
+echo "💡 Why switch?"
+echo "  • uv venv: 10-100x faster than virtualenv"
+echo "  • python -m venv: No extra dependencies, built into Python"
+echo "  • Both create standard virtual environments"
+echo ""
+echo "🔧 To proceed with virtualenv anyway:"
+echo "  virtualenv --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 virtualenv $*"

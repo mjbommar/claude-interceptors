@@ -23,6 +23,7 @@ When you (or an AI agent) run old Python commands, it shows better modern altern
 
 - `python script.py` → suggests `uv run script.py`
 - `pip install pkg` → suggests `uv add pkg` or `uv pip install pkg`
+- `virtualenv myenv` → suggests `uv venv myenv` or `python -m venv myenv`
 - `mypy file.py` → suggests `ty file.py` (10x faster)
 - `pyright .` → suggests `ty .` (no Node.js needed)
 - `black file.py` → suggests `ruff format file.py` (10x faster)
@@ -64,6 +65,7 @@ $ pip install requests
 |---------|----------|-----|
 | `python script.py` | `uv run script.py` | Better dependency management |
 | `pip install pkg` | `uv add pkg` / `uv pip install pkg` | Faster, more reliable |
+| `virtualenv myenv` | `uv venv myenv` / `python -m venv myenv` | 10-100x faster, no extra deps |
 | `mypy file.py` | `ty file.py` | 10-100x faster type checking |
 | `pyright .` | `ty .` | Rust-based, no Node.js dependency |
 | `black file.py` | `ruff format file.py` | 10-30x faster formatting |
