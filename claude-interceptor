@@ -35,16 +35,17 @@ Usage: claude-interceptor <command>
 Commands:
   install     Download and install interceptors
   uninstall   Remove interceptors
-  enable      Add interceptors to PATH
-  disable     Remove interceptors from PATH
+  enable      Output commands to add interceptors to PATH
+  disable     Output commands to remove interceptors from PATH
   status      Show installation status
   update      Update to latest version
   help        Show this help
 
 Examples:
   claude-interceptor install
+  source <(claude-interceptor enable)    # Enable for current session
+  eval "$(claude-interceptor disable)"   # Disable for current session
   claude-interceptor status
-  claude-interceptor disable
 EOF
 }
 
@@ -64,23 +65,23 @@ is_in_path() {
 
 add_to_path() {
     if is_in_path; then
-        info "Already enabled for this session"
+        echo "# Already enabled for this session" >&2
         return 0
     fi
     
-    export PATH="$INTERCEPTOR_DIR:$PATH"
-    success "Enabled for current session only"
-    info "Run 'claude-interceptor disable' to turn off"
+    echo "export PATH=\"$INTERCEPTOR_DIR:\$PATH\""
+    echo "echo -e \"${GREEN}✅ Enabled for current session only${NC}\"" >&2
+    echo "echo -e \"${BLUE}ℹ️  Run 'source <(claude-interceptor disable)' to turn off${NC}\"" >&2
 }
 
 remove_from_path() {
     if ! is_in_path; then
-        info "Already disabled for this session"
+        echo "# Already disabled for this session" >&2
         return 0
     fi
     
-    export PATH=$(echo "$PATH" | sed "s|$INTERCEPTOR_DIR:||g")
-    success "Disabled for current session only"
+    echo "export PATH=\$(echo \"\$PATH\" | sed \"s|$INTERCEPTOR_DIR:||g\")"
+    echo "echo -e \"${GREEN}✅ Disabled for current session only${NC}\"" >&2
 }
 
 install_interceptors() {
@@ -149,7 +150,7 @@ update_interceptors() {
 case "${1:-}" in
     "install")
         install_interceptors
-        info "Run 'claude-interceptor enable' to activate for this session"
+        info "Run 'source <(claude-interceptor enable)' to activate for this session"
         ;;
     "uninstall")
         uninstall_interceptors

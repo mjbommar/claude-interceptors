@@ -27,12 +27,29 @@ chmod +x "$INSTALL_DIR/claude-interceptor"
 # Run the install
 "$INSTALL_DIR/claude-interceptor" install
 
+# Add convenient aliases to ~/.bashrc
+BASHRC="$HOME/.bashrc"
+if [[ -f "$BASHRC" ]]; then
+    # Remove existing aliases if they exist
+    grep -v "claude-interceptor-" "$BASHRC" > "$BASHRC.tmp" && mv "$BASHRC.tmp" "$BASHRC"
+    
+    # Add new aliases
+    cat >> "$BASHRC" << 'EOF'
+
+# Claude Interceptor aliases
+alias claude-interceptor-enable='source <(claude-interceptor enable)'
+alias claude-interceptor-disable='source <(claude-interceptor disable)'
+alias claude-interceptor-status='claude-interceptor status'
+EOF
+    echo "✅ Added aliases to ~/.bashrc"
+fi
+
 echo ""
 echo "✅ Installed! Interceptors are ready but disabled by default."
 echo ""
-echo "Enable for current session: claude-interceptor enable"
-echo "Disable for current session: claude-interceptor disable"
-echo "Check status: claude-interceptor status"
+echo "Enable for current session: claude-interceptor-enable"
+echo "Disable for current session: claude-interceptor-disable" 
+echo "Check status: claude-interceptor-status"
 echo ""
 echo "Test (after enabling): python --help (or black --help, pylint --help, etc.)"
 echo "Bypass: python --help --force"
