@@ -5,7 +5,7 @@ set -e
 
 VERSION="0.1.0"
 INTERCEPTOR_DIR="$HOME/.local/bin/claude-interceptors"
-REPO_URL="https://raw.githubusercontent.com/mjbommar/claude-interceptors/main"
+REPO_URL="https://raw.githubusercontent.com/mjbommar/claude-interceptors/master"
 
 # Colors
 RED='\033[0;31m'
