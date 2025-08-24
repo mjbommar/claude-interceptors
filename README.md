@@ -8,7 +8,7 @@ Intercepts old Python commands and suggests modern alternatives. Perfect for tra
 
 | Action | Command | Description |
 |--------|---------|-------------|
-| **Install** | `curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/refs/heads/master/install.sh \| bash` | One-line install + adds aliases to ~/.bashrc |
+| **Install** | `curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/refs/heads/master/install.sh \| bash` | One-line install + adds aliases to ~/.bashrc (bash only) |
 | **Enable** | `claude-interceptor-enable` | Turn on for current session |
 | **Test** | `python --help` | Should show interceptor message |
 | **Disable** | `claude-interceptor-disable` | Turn off for current session |
@@ -96,6 +96,12 @@ Removes everything cleanly.
 4. Shows suggestions and allows bypass to the real command
 
 Simple, effective, and completely reversible.
+
+## Shell Support
+
+Currently supports **bash only**. The install script adds aliases to `~/.bashrc`. 
+
+**Want zsh/fish support?** PRs welcome! The core interceptors work with any shell - just need to update the install script for `~/.zshrc` and `~/.config/fish/config.fish`.
 
 ## Inspiration
 
