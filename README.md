@@ -4,11 +4,18 @@
 
 Intercepts old Python commands and suggests modern alternatives. Perfect for training AI agents and helping developers discover better tooling.
 
-## 🚀 One-Line Install
+## 🚀 Quick Start
 
-```bash
-curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/refs/heads/master/install.sh | bash
-```
+| Action | Command | Description |
+|--------|---------|-------------|
+| **Install** | `curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/refs/heads/master/install.sh \| bash` | One-line install + adds aliases to ~/.bashrc |
+| **Enable** | `claude-interceptor-enable` | Turn on for current session |
+| **Test** | `python --help` | Should show interceptor message |
+| **Disable** | `claude-interceptor-disable` | Turn off for current session |
+| **Status** | `claude-interceptor-status` | Check installation status |
+| **Bypass** | `python --help --force` | Skip interceptor temporarily |
+
+> **Note**: After install, restart your terminal or run `source ~/.bashrc` to use the aliases.
 
 ## What It Does
 
@@ -41,30 +48,15 @@ $ pip install requests
   CLAUDE_INTERCEPTOR_BYPASS=1 pip install requests
 ```
 
-## Bypass Options
+## Management & Bypass
 
-**Never blocks you** - always provides escape hatches:
-
-```bash
-# Temporary bypass
-CLAUDE_INTERCEPTOR_BYPASS=1 python script.py
-
-# Force flag
-python script.py --force
-
-# Disable completely
-claude-interceptor disable
-```
-
-## Management
-
-```bash
-claude-interceptor status      # Check if installed/enabled
-claude-interceptor disable     # Turn off interceptors  
-claude-interceptor enable      # Turn on interceptors
-claude-interceptor uninstall   # Remove completely
-claude-interceptor update      # Update to latest
-```
+| Purpose | Command | Description |
+|---------|---------|-------------|
+| **Check Status** | `claude-interceptor-status` | Show installation and enable status |
+| **Update** | `claude-interceptor update` | Update to latest version |
+| **Uninstall** | `claude-interceptor uninstall` | Remove completely (cleans ~/.bashrc) |
+| **Bypass Once** | `python script.py --force` | Skip interceptor for this command |
+| **Bypass Once** | `CLAUDE_INTERCEPTOR_BYPASS=1 python script.py` | Environment variable bypass |
 
 ## Intercepted Commands
 
