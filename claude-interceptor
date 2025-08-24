@@ -70,8 +70,8 @@ add_to_path() {
     fi
     
     echo "export PATH=\"$INTERCEPTOR_DIR:\$PATH\""
-    echo "echo -e \"${GREEN}✅ Enabled for current session only${NC}\"" >&2
-    echo "echo -e \"${BLUE}ℹ️  Run 'source <(claude-interceptor disable)' to turn off${NC}\"" >&2
+    echo -e "${GREEN}✅ Enabled for current session only${NC}" >&2
+    echo -e "${BLUE}ℹ️  Run 'source <(claude-interceptor disable)' to turn off${NC}" >&2
 }
 
 remove_from_path() {
@@ -81,7 +81,7 @@ remove_from_path() {
     fi
     
     echo "export PATH=\$(echo \"\$PATH\" | sed \"s|$INTERCEPTOR_DIR:||g\")"
-    echo "echo -e \"${GREEN}✅ Disabled for current session only${NC}\"" >&2
+    echo -e "${GREEN}✅ Disabled for current session only${NC}" >&2
 }
 
 install_interceptors() {
