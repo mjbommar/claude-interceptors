@@ -7,7 +7,7 @@ Intercepts old Python commands and suggests modern alternatives. Perfect for tra
 ## 🚀 One-Line Install
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/mjbommar/claude-interceptors/refs/heads/master/install.sh | bash
 ```
 
 ## What It Does

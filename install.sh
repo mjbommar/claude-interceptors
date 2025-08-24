@@ -2,7 +2,6 @@
 # Claude Interceptors - Simple One-Line Install
 
 set -e
-
 REPO_URL="https://raw.githubusercontent.com/mjbommar/claude-interceptors/main"
 INSTALL_DIR="$HOME/.local/bin"
 
