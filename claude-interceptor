@@ -1,0 +1,184 @@
+#!/bin/bash
+# Claude Interceptor - Simple Management Script
+
+set -e
+
+VERSION="0.1.0"
+INTERCEPTOR_DIR="$HOME/.local/bin/claude-interceptors"
+REPO_URL="https://raw.githubusercontent.com/mjbommar/claude-interceptors/main"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+error() {
+    echo -e "${RED}❌ $1${NC}" >&2
+    exit 1
+}
+
+success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+
+print_usage() {
+    cat << EOF
+Claude Interceptor v$VERSION - Simple Python Command Interceptor
+
+Usage: claude-interceptor <command>
+
+Commands:
+  install     Download and install interceptors
+  uninstall   Remove interceptors
+  enable      Add interceptors to PATH
+  disable     Remove interceptors from PATH
+  status      Show installation status
+  update      Update to latest version
+  help        Show this help
+
+Examples:
+  claude-interceptor install
+  claude-interceptor status
+  claude-interceptor disable
+EOF
+}
+
+get_shell_rc() {
+    if [[ -n "$ZSH_VERSION" ]]; then
+        echo "$HOME/.zshrc"
+    elif [[ -n "$FISH_VERSION" ]]; then
+        echo "$HOME/.config/fish/config.fish"
+    else
+        echo "$HOME/.bashrc"
+    fi
+}
+
+is_in_path() {
+    echo "$PATH" | grep -q "$INTERCEPTOR_DIR"
+}
+
+add_to_path() {
+    if is_in_path; then
+        info "Already enabled"
+        return 0
+    fi
+    
+    local shell_rc=$(get_shell_rc)
+    
+    echo "" >> "$shell_rc"
+    echo "# Claude Interceptors" >> "$shell_rc"
+    if [[ -n "$FISH_VERSION" ]]; then
+        echo "set -x PATH $INTERCEPTOR_DIR \$PATH" >> "$shell_rc"
+    else
+        echo "export PATH=\"$INTERCEPTOR_DIR:\$PATH\"" >> "$shell_rc"
+    fi
+    
+    success "Enabled - restart your shell or: source $shell_rc"
+}
+
+remove_from_path() {
+    local shell_rc=$(get_shell_rc)
+    
+    if [[ -f "$shell_rc" ]]; then
+        # Remove lines containing INTERCEPTOR_DIR or the comment
+        grep -v "$INTERCEPTOR_DIR\|Claude Interceptors" "$shell_rc" > "${shell_rc}.tmp" && mv "${shell_rc}.tmp" "$shell_rc"
+        success "Disabled"
+    fi
+}
+
+install_interceptors() {
+    info "Installing interceptors..."
+    
+    mkdir -p "$INTERCEPTOR_DIR"
+    
+    # Download interceptors
+    local scripts=("python" "python3" "pip" "pip3" "mypy" "pyright" "pylint" "black" "flake8" "isort")
+    
+    for script in "${scripts[@]}"; do
+        if command -v curl >/dev/null 2>&1; then
+            curl -sSL "$REPO_URL/$script" -o "$INTERCEPTOR_DIR/$script"
+        elif command -v wget >/dev/null 2>&1; then
+            wget -q "$REPO_URL/$script" -O "$INTERCEPTOR_DIR/$script"
+        else
+            error "Need curl or wget to download"
+        fi
+        chmod +x "$INTERCEPTOR_DIR/$script"
+    done
+    
+    success "Installed to $INTERCEPTOR_DIR"
+}
+
+uninstall_interceptors() {
+    remove_from_path
+    
+    if [[ -d "$INTERCEPTOR_DIR" ]]; then
+        rm -rf "$INTERCEPTOR_DIR"
+        success "Uninstalled"
+    else
+        info "Not installed"
+    fi
+}
+
+show_status() {
+    echo "Claude Interceptor Status"
+    echo "========================"
+    
+    if [[ -d "$INTERCEPTOR_DIR" ]]; then
+        echo "📦 Installed: Yes ($INTERCEPTOR_DIR)"
+        local count=$(find "$INTERCEPTOR_DIR" -type f -executable 2>/dev/null | wc -l)
+        echo "🔧 Scripts: $count interceptors"
+    else
+        echo "📦 Installed: No"
+    fi
+    
+    if is_in_path; then
+        echo "🛤️  Enabled: Yes (in PATH)"
+    else
+        echo "🛤️  Enabled: No (not in PATH)"
+    fi
+    
+    echo "🐚 Shell: $(basename "$SHELL") ($(get_shell_rc))"
+}
+
+update_interceptors() {
+    if [[ ! -d "$INTERCEPTOR_DIR" ]]; then
+        error "Not installed - run 'claude-interceptor install' first"
+    fi
+    
+    info "Updating..."
+    install_interceptors
+}
+
+# Parse command
+case "${1:-}" in
+    "install")
+        install_interceptors
+        add_to_path
+        ;;
+    "uninstall")
+        uninstall_interceptors
+        ;;
+    "enable")
+        add_to_path
+        ;;
+    "disable")
+        remove_from_path
+        ;;
+    "status")
+        show_status
+        ;;
+    "update")
+        update_interceptors
+        ;;
+    "help"|"--help"|"-h"|"")
+        print_usage
+        ;;
+    *)
+        error "Unknown command: $1"
+        ;;
+esac

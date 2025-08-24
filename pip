@@ -1,0 +1,66 @@
+#!/bin/bash
+# Claude Interceptor for 'pip' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    # Try to find pip or use python -m pip
+    if command -v pip >/dev/null 2>&1; then
+        exec pip "$@"
+    elif command -v pip3 >/dev/null 2>&1; then
+        exec pip3 "$@"
+    else
+        REAL_PYTHON=$(which python 2>/dev/null || which python3 2>/dev/null || echo "/usr/bin/python3")
+        exec "$REAL_PYTHON" -m pip "$@"
+    fi
+    exit $?
+fi
+
+# Parse the command to provide better suggestions
+COMMAND="$1"
+shift
+ARGS="$*"
+
+case "$COMMAND" in
+    "install")
+        echo "❌ Direct pip install detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  Choose the right uv command for your use case:"
+        echo "  📦 uv add $ARGS                    # Add to pyproject.toml dependencies"
+        echo "  📦 uv add --group dev $ARGS        # Add to dev dependency group" 
+        echo "  📦 uv add --group test $ARGS       # Add to test dependency group"
+        echo "  📦 uv pip install $ARGS            # Temporary install (no pyproject.toml change)"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip install $ARGS --force"
+        echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pip install $ARGS"
+        ;;
+    "freeze")
+        echo "❌ Direct pip freeze detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  For better dependency management:"
+        echo "  📋 uv pip freeze"
+        echo "  📋 uv export --format requirements-txt"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip freeze --force"
+        ;;
+    *)
+        echo "❌ Direct pip usage detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  Consider using uv instead:"
+        echo "  ⚡ uv pip $COMMAND $ARGS"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip $COMMAND $ARGS --force"
+        echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pip $COMMAND $ARGS"
+        ;;
+esac
+
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/uv/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

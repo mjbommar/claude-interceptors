@@ -1,0 +1,37 @@
+#!/bin/bash
+# Claude Interceptor for 'black' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    if command -v black >/dev/null 2>&1; then
+        REAL_BLACK=$(which black)
+        exec "$REAL_BLACK" "$@"
+    else
+        echo "❌ black not found in system PATH" >&2
+        exit 127
+    fi
+    exit $?
+fi
+
+echo "❌ black usage detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  For much faster formatting:"
+echo "  ⚡ ruff format $*"
+echo "  📦 uv tool run ruff format $*  # If ruff not installed"
+echo ""
+echo "💡 Why ruff format is better:"
+echo "  • 10-30x faster than black"
+echo "  • Same output as black (compatible)"
+echo "  • Built in Rust for speed"
+echo "  • Part of unified ruff toolchain"
+echo "  • No separate dependency needed"
+echo ""
+echo "🔧 To proceed with black anyway:"
+echo "  black --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 black $*"
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/ruff/formatter/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

@@ -1,0 +1,58 @@
+#!/bin/bash
+# Claude Interceptor for 'pip3' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    exec /usr/bin/pip3 "$@"
+    exit $?
+fi
+
+# Parse the command to provide better suggestions
+COMMAND="$1"
+shift
+ARGS="$*"
+
+case "$COMMAND" in
+    "install")
+        echo "❌ Direct pip3 install detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  Choose the right uv command for your use case:"
+        echo "  📦 uv add $ARGS                    # Add to pyproject.toml dependencies"
+        echo "  📦 uv add --group dev $ARGS        # Add to dev dependency group" 
+        echo "  📦 uv add --group test $ARGS       # Add to test dependency group"
+        echo "  📦 uv pip install $ARGS            # Temporary install (no pyproject.toml change)"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip3 install $ARGS --force"
+        echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pip3 install $ARGS"
+        ;;
+    "freeze")
+        echo "❌ Direct pip3 freeze detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  For better dependency management:"
+        echo "  📋 uv pip freeze"
+        echo "  📋 uv export --format requirements-txt"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip3 freeze --force"
+        ;;
+    *)
+        echo "❌ Direct pip3 usage detected!"
+        echo ""
+        echo "🤖 AI Agent Instructions:"
+        echo "  Consider using uv instead:"
+        echo "  ⚡ uv pip $COMMAND $ARGS"
+        echo ""
+        echo "🔧 To proceed anyway:"
+        echo "  pip3 $COMMAND $ARGS --force"
+        echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pip3 $COMMAND $ARGS"
+        ;;
+esac
+
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/uv/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

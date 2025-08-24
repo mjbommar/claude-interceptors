@@ -1,0 +1,26 @@
+#!/bin/bash
+# Claude Interceptor for 'python' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    # Find the real python executable
+    REAL_PYTHON=$(which python 2>/dev/null || which python3 2>/dev/null || echo "/usr/bin/python3")
+    exec "$REAL_PYTHON" "$@"
+    exit $?
+fi
+
+echo "❌ Direct python usage detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  For better dependency management, consider:"
+echo "  📦 uv run $*"
+echo "  📦 python -m venv venv && source venv/bin/activate && python $*"
+echo ""
+echo "🔧 To proceed anyway:"
+echo "  python --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 python $*"
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/uv/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Claude Interceptor for 'python3' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    exec /usr/bin/python3 "$@"
+    exit $?
+fi
+
+echo "❌ Direct python3 usage detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  For better dependency management, consider:"
+echo "  📦 uv run $*"
+echo "  📦 python3 -m venv venv && source venv/bin/activate && python3 $*"
+echo ""
+echo "🔧 To proceed anyway:"
+echo "  python3 --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 python3 $*"
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/uv/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

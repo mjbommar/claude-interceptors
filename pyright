@@ -1,0 +1,41 @@
+#!/bin/bash
+# Claude Interceptor for 'pyright' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    # Try to find the real pyright executable
+    if command -v pyright >/dev/null 2>&1; then
+        REAL_PYRIGHT=$(which pyright)
+        exec "$REAL_PYRIGHT" "$@"
+    else
+        echo "❌ pyright not found in system PATH" >&2
+        exit 127
+    fi
+    exit $?
+fi
+
+echo "❌ pyright usage detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  For much faster type checking:"
+echo "  ⚡ ty $*"
+echo "  📋 uv tool run ty $*  # If ty not installed"
+echo ""
+echo "💡 Why ty is better:"
+echo "  • 10-100x faster than pyright"
+echo "  • Native Rust binary (no Node.js dependency)"
+echo "  • Same type checking accuracy as pyright"
+echo "  • Better error messages and performance"
+echo "  • Easy to install and use"
+echo ""
+echo "🔧 Other fast alternatives:"
+echo "  📊 basedpyright $* # Faster pyright fork"
+echo ""
+echo "🔧 To proceed with pyright anyway:"
+echo "  pyright --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pyright $*"
+echo ""
+echo "💡 Learn more: https://github.com/whtcorpsinc/comypy"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1

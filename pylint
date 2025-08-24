@@ -1,0 +1,37 @@
+#!/bin/bash
+# Claude Interceptor for 'pylint' command
+
+# Check for bypass flags
+if [[ "$CLAUDE_INTERCEPTOR_BYPASS" == "1" ]] || [[ "$*" == *"--force"* ]]; then
+    if command -v pylint >/dev/null 2>&1; then
+        REAL_PYLINT=$(which pylint)
+        exec "$REAL_PYLINT" "$@"
+    else
+        echo "❌ pylint not found in system PATH" >&2
+        exit 127
+    fi
+    exit $?
+fi
+
+echo "❌ pylint usage detected!"
+echo ""
+echo "🤖 AI Agent Instructions:"
+echo "  For much faster linting:"
+echo "  ⚡ ruff check $*"
+echo "  📦 uv tool run ruff check $*  # If ruff not installed"
+echo ""
+echo "💡 Why ruff is better:"
+echo "  • 10-100x faster than pylint"
+echo "  • Built in Rust for speed"
+echo "  • More comprehensive rule set"
+echo "  • Better error messages"
+echo "  • Actively maintained by Astral"
+echo ""
+echo "🔧 To proceed with pylint anyway:"
+echo "  pylint --force $*"
+echo "  CLAUDE_INTERCEPTOR_BYPASS=1 pylint $*"
+echo ""
+echo "💡 Learn more: https://docs.astral.sh/ruff/"
+echo "🔧 Disable globally: claude-interceptor disable"
+
+exit 1
